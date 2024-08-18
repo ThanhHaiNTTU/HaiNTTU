@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* globals.css */
+
+body.light {
+    background-color: #f0f0f0;
+    color: #000;
+  }
+  
+  body.dark {
+    background-color: #181818;
+    color: #fff;
+  }
+  
+  .light .bg-white {
+    background-color: #ffffff;
+  }
+  
+  .dark .bg-white {
+    background-color: #333333;
+  }
+  
+  .light .text-gray-900 {
+    color: #1a202c;
+  }
+  
+  .dark .text-gray-900 {
+    color: #e2e8f0;
+  }
+  
+  .light .text-gray-700 {
+    color: #4a5568;
+  }
+  
+  .dark .text-gray-700 {
+    color: #cbd5e0;
+  }
+  
+  .light .text-gray-600 {
+    color: #718096;
+  }
+  
+  .dark .text-gray-600 {
+    color: #a0aec0;
+  }
+  
+  .dark-header {
+    background-color: #333;
+  }
+  
+  .dark-menu-icon {
+    color: white;
+    
+    
+  }
+/* globals.css */
+.dark-theme {
+  --text-color: white;
+  --hover-bg-color: rgba(255, 255, 255, 0.1); /* màu nền khi hover cho dark theme */
+}
+
+.light-theme {
+  --text-color: black;
+  --hover-bg-color: rgba(0, 0, 0, 0.1); /* màu nền khi hover cho light theme */
+}
+
+/* Các lớp chung cho các mục menu và thông báo */
+.menu-item,
+.notification-item,
+.profile-item,
+.password-item {
+  color: var(--text-color);
+}
+
+.menu-item:hover,
+.notification-item:hover,
+.profile-item:hover,
+.password-item:hover {
+  background-color: var(--hover-bg-color);
+}
+/* Thêm vào globals.css */
+body.dark-theme {
+  background-color: #1a202c; /* Màu nền cho chế độ tối */
+  color: white; /* Màu chữ chung cho chế độ tối */
+}
+
+.dark-theme .bg-white {
+  background-color: #2d3748; /* Màu nền cho các khối trong chế độ tối */
+}
+
+.dark-theme .text-gray-900,
+.dark-theme .text-gray-700,
+.dark-theme .text-gray-600,
+.dark-theme .text-gray-500 {
+  color: white; /* Màu chữ cho các lớp này trong chế độ tối */
+}
+
+.dark-theme .bg-blue-500 {
+  background-color: #2b6cb0; /* Màu nền của tiêu đề bảng cho chế độ tối */
+}
+
+.dark-theme .bg-gray-500 {
+  background-color: #718096; /* Màu nền của các nút trong chế độ tối */
+}
+
+.dark-theme .menu-item,
+.dark-theme .notification-item,
+.dark-theme .profile-item,
+.dark-theme .password-item {
+  color: white; /* Màu chữ cho các menu item trong chế độ tối */
+}
+/* globals.css */
+
+/* Dark theme styles */
+.dark {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+}
+
+.dark .dark-card {
+  background-color: #333;
+  color: #f0f0f0;
+}
+
+.dark .dark-card-mobile {
+  background-color: #333;
+  color: #f0f0f0;
+}
+
+.light {
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.light .dark-card {
+  background-color: #fff;
+  color: #333;
+}
+
+.light .dark-card-mobile {
+  background-color: #fff;
+  color: #333;
+}
+
+  /* Add more classes as needed */
+  
