@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import './globals.css';
-import { FaMoneyBillWave, FaPlus, FaHome, FaChartPie, FaUtensils, FaPlane, FaShoppingCart, FaHeartbeat, FaCar, FaBook, FaGamepad, FaEllipsisH, FaMoneyCheckAlt, FaEdit, FaTrash, FaSave, FaTimes } from 'react-icons/fa';
+import { FaMoneyBillWave, FaPlus, FaHome, FaChartPie, FaUtensils, FaPlane, FaShoppingCart, FaHeartbeat, FaCar, FaBook, FaGamepad, FaEllipsisH, FaMoneyCheckAlt, FaEdit, FaTrash, FaSave, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Transaction {
   id: number;
@@ -73,6 +73,7 @@ const Page: React.FC = () => {
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formErrors, setFormErrors] = useState<{ date: boolean; amount: boolean }>({ date: false, amount: false });
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
 
   useEffect(() => {
     const existingData = localStorage.getItem('transactions');
@@ -144,6 +145,26 @@ const Page: React.FC = () => {
   const closeStatisticsModal = () => {
     setShowStatistics(false);
   };
+
+  const handleNextMonth = () => {
+    setSelectedMonth(new Date(selectedMonth.setMonth(selectedMonth.getMonth() + 1)));
+  };
+
+  const handlePreviousMonth = () => {
+    setSelectedMonth(new Date(selectedMonth.setMonth(selectedMonth.getMonth() - 1)));
+  };
+
+  const handleShowAll = () => {
+    setSelectedMonth(new Date());
+  };
+
+  const filteredTransactions = transactions.filter(transaction => {
+    const transactionDate = new Date(transaction.date);
+    return (
+      transactionDate.getMonth() === selectedMonth.getMonth() &&
+      transactionDate.getFullYear() === selectedMonth.getFullYear()
+    );
+  });
 
   const balance = calculateBalance(transactions);
   const balanceColor = balance >= 0 ? 'text-green-500' : 'text-red-500';
@@ -290,7 +311,7 @@ const Page: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {transactions.map((transaction) => (
+                  {filteredTransactions.map((transaction) => (
                     <tr key={transaction.id} className="h-12">
                       <td className="py-2 px-4 border">
                         {editingId === transaction.id ? (
@@ -353,9 +374,20 @@ const Page: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            <div className="mt-6 flex justify-end">
-              <button className="bg-gray-500 text-white px-4 py-2 rounded ml-2" onClick={closeStatisticsModal}>
+            <div className="mt-6 flex justify-end space-x-2">
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={handleShowAll}>
+                Tất cả
+              </button>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={closeStatisticsModal}>
                 Đóng
+              </button>
+            </div>
+            <div className="mt-2 flex justify-center space-x-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handlePreviousMonth}>
+                <FaChevronLeft />
+              </button>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleNextMonth}>
+                <FaChevronRight />
               </button>
             </div>
           </div>
