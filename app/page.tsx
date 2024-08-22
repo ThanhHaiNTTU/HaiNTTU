@@ -61,6 +61,22 @@ const calculateBalance = (transactions: Transaction[]) => {
   return totalIncome - totalExpense;
 };
 
+const calculateTotals = (transactions: Transaction[]) => {
+  let totalIncome = 0;
+  let totalExpense = 0;
+
+  transactions.forEach(transaction => {
+    const amount = parseInt(transaction.amount, 10);
+    if (incomeCategories.some(category => category.label === transaction.type)) {
+      totalIncome += amount;
+    } else if (expenseCategories.some(category => category.label === transaction.type)) {
+      totalExpense += amount;
+    }
+  });
+
+  return { totalIncome, totalExpense };
+};
+
 const Page: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -71,6 +87,7 @@ const Page: React.FC = () => {
     type: ''
   });
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
+  const [showSummary, setShowSummary] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formErrors, setFormErrors] = useState<{ date: boolean; amount: boolean }>({ date: false, amount: false });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
@@ -158,6 +175,14 @@ const Page: React.FC = () => {
     setSelectedMonth(new Date());
   };
 
+  const handleShowSummary = () => {
+    setShowSummary(true);
+  };
+
+  const closeSummaryModal = () => {
+    setShowSummary(false);
+  };
+
   const filteredTransactions = transactions.filter(transaction => {
     const transactionDate = new Date(transaction.date);
     return (
@@ -168,6 +193,8 @@ const Page: React.FC = () => {
 
   const balance = calculateBalance(transactions);
   const balanceColor = balance >= 0 ? 'text-green-500' : 'text-red-500';
+
+  const { totalIncome, totalExpense } = calculateTotals(transactions);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -184,7 +211,7 @@ const Page: React.FC = () => {
           {/* Balance Display */}
           <div className="bg-white shadow rounded-lg p-6 text-center">
             <h2 className="text-2xl font-bold text-red-600 mt-2">HUỲNH THANH HẢI</h2>
-            <h2 className={`text-lg font-semibold ${balanceColor}`}>
+            <h2 className="text-lg font-semibold text-black">
               Số dư: {formatCurrency(balance)}
             </h2>
             <div className="mt-4 flex justify-center space-x-2">
@@ -194,7 +221,7 @@ const Page: React.FC = () => {
               <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory('Thu nhập')}>
                 Thêm thu nhập
               </button>
-              <button className="bg-gray-500 text-white px-4 py-2 rounded">
+              <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleShowSummary}>
                 Tổng kết
               </button>
             </div>
@@ -295,11 +322,42 @@ const Page: React.FC = () => {
         </div>
       )}
 
+      {/* Summary Modal */}
+      {showSummary && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Tổng kết</h3>
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700">Tổng thu nhập: {formatCurrency(totalIncome)}</p>
+            </div>
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-700">Tổng chi tiêu: {formatCurrency(totalExpense)}</p>
+            </div>
+            <div className="mt-4">
+              <p className={`text-sm font-medium ${balanceColor}`}>Số dư hiện tại: {formatCurrency(balance)}</p>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button className="bg-gray-500 text-white px-4 py-2 rounded ml-2" onClick={closeSummaryModal}>
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Statistics Modal */}
       {showStatistics && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
-            <h3 className="text-lg font-medium text-gray-900">Thống kê giao dịch</h3>
+            <div className="flex justify-between items-center mb-4">
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handlePreviousMonth}>
+                <FaChevronLeft />
+              </button>
+              <h3 className="text-lg font-medium text-gray-900">Thống kê giao dịch</h3>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleNextMonth}>
+                <FaChevronRight />
+              </button>
+            </div>
             <div className="overflow-x-auto mt-4">
               <table className="min-w-full bg-white">
                 <thead>
@@ -313,7 +371,7 @@ const Page: React.FC = () => {
                 <tbody>
                   {filteredTransactions.map((transaction) => (
                     <tr key={transaction.id} className="h-12">
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border h-12">
                         {editingId === transaction.id ? (
                           <input
                             type="date"
@@ -326,7 +384,7 @@ const Page: React.FC = () => {
                           formatDate(transaction.date)
                         )}
                       </td>
-                      <td className={`py-2 px-4 border text-right ${expenseCategories.some(category => category.label === transaction.type) ? 'text-red-500' : 'text-green-500'}`}>
+                      <td className={`py-2 px-4 border text-right ${expenseCategories.some(category => category.label === transaction.type) ? 'text-red-500' : 'text-green-500'} h-12`}>
                         {editingId === transaction.id ? (
                           <input
                             type="text"
@@ -339,7 +397,7 @@ const Page: React.FC = () => {
                           formatCurrency(parseInt(transaction.amount, 10))
                         )}
                       </td>
-                      <td className="py-2 px-4 border">
+                      <td className="py-2 px-4 border h-12">
                         {editingId === transaction.id ? (
                           <input
                             type="text"
@@ -352,7 +410,7 @@ const Page: React.FC = () => {
                           transaction.type
                         )}
                       </td>
-                      <td className="py-2 px-4 border flex space-x-2 justify-center">
+                      <td className="py-2 px-4 border flex space-x-2 justify-center h-12">
                         {editingId === transaction.id ? (
                           <>
                             <button className="bg-blue-500 text-white px-2 py-1 rounded" onClick={handleFormSubmit}>
@@ -375,19 +433,11 @@ const Page: React.FC = () => {
               </table>
             </div>
             <div className="mt-6 flex justify-end space-x-2">
-              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={handleShowAll}>
+              <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={handleShowAll}>
                 Tất cả
               </button>
               <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={closeStatisticsModal}>
                 Đóng
-              </button>
-            </div>
-            <div className="mt-2 flex justify-center space-x-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handlePreviousMonth}>
-                <FaChevronLeft />
-              </button>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleNextMonth}>
-                <FaChevronRight />
               </button>
             </div>
           </div>
