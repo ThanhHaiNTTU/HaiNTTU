@@ -1,7 +1,32 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import './globals.css';
-import { FaMoneyBillWave, FaPlus, FaHome, FaChartPie, FaUtensils, FaPlane, FaShoppingCart, FaHeartbeat, FaCar, FaBook, FaGamepad, FaEllipsisH, FaMoneyCheckAlt, FaEdit, FaTrash, FaSave, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import {
+  FaUserCircle,
+  FaPlus,
+  FaHome,
+  FaChartPie,
+  FaBook,
+  FaUtensils,
+  FaPlane,
+  FaShoppingCart,
+  FaHeartbeat,
+  FaCar,
+  FaGamepad,
+  FaEllipsisH,
+  FaMoneyCheckAlt,
+  FaEdit,
+  FaTrash,
+  FaSave,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+  FaUserEdit,
+  FaSignOutAlt,
+  FaQuestionCircle,
+  FaLink,
+  FaLock
+} from 'react-icons/fa';
 
 interface Transaction {
   id: number;
@@ -45,36 +70,26 @@ const formatCurrency = (amount: number) => {
   return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 };
 
-const calculateBalance = (transactions: Transaction[]) => {
+const calculateTotals = (transactions: Transaction[], selectedMonth: Date) => {
   let totalIncome = 0;
   let totalExpense = 0;
 
   transactions.forEach(transaction => {
-    const amount = parseInt(transaction.amount, 10);
-    if (incomeCategories.some(category => category.label === transaction.type)) {
-      totalIncome += amount;
-    } else if (expenseCategories.some(category => category.label === transaction.type)) {
-      totalExpense += amount;
+    const transactionDate = new Date(transaction.date);
+    if (
+      transactionDate.getMonth() === selectedMonth.getMonth() &&
+      transactionDate.getFullYear() === selectedMonth.getFullYear()
+    ) {
+      const amount = parseInt(transaction.amount, 10);
+      if (incomeCategories.some(category => category.label === transaction.type)) {
+        totalIncome += amount;
+      } else if (expenseCategories.some(category => category.label === transaction.type)) {
+        totalExpense += amount;
+      }
     }
   });
 
-  return totalIncome - totalExpense;
-};
-
-const calculateTotals = (transactions: Transaction[]) => {
-  let totalIncome = 0;
-  let totalExpense = 0;
-
-  transactions.forEach(transaction => {
-    const amount = parseInt(transaction.amount, 10);
-    if (incomeCategories.some(category => category.label === transaction.type)) {
-      totalIncome += amount;
-    } else if (expenseCategories.some(category => category.label === transaction.type)) {
-      totalExpense += amount;
-    }
-  });
-
-  return { totalIncome, totalExpense };
+  return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
 };
 
 const Page: React.FC = () => {
@@ -91,6 +106,12 @@ const Page: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formErrors, setFormErrors] = useState<{ date: boolean; amount: boolean }>({ date: false, amount: false });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [showNotifications, setShowNotifications] = useState<boolean>(false);
+  const [showAccountModal, setShowAccountModal] = useState<boolean>(false);
+  const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
+  const [showLinkBank, setShowLinkBank] = useState<boolean>(false);
+  const [showSecuritySettings, setShowSecuritySettings] = useState<boolean>(false);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
 
   useEffect(() => {
     const existingData = localStorage.getItem('transactions');
@@ -127,7 +148,7 @@ const Page: React.FC = () => {
       setTransactions(newTransactions);
       localStorage.setItem('transactions', JSON.stringify(newTransactions));
       setSelectedCategory(null);
-      alert('Transaction saved successfully');
+      alert('Giao dịch đã được lưu thành công');
     }
   };
 
@@ -137,6 +158,14 @@ const Page: React.FC = () => {
       setEditingId(id);
       setTransactionData(transactionToEdit);
     }
+  };
+
+  const handleHelpClick = () => {
+    setShowHelp(true);
+  };
+
+  const closeHelpModal = () => {
+    setShowHelp(false);
   };
 
   const handleDelete = (id: number) => {
@@ -183,6 +212,26 @@ const Page: React.FC = () => {
     setShowSummary(false);
   };
 
+  const handleNotificationsClick = () => {
+    setShowNotifications(true);
+  };
+
+  const closeNotificationsModal = () => {
+    setShowNotifications(false);
+  };
+
+  const handleAccountClick = () => {
+    setShowAccountModal(true);
+  };
+
+  const closeAccountModal = () => {
+    setShowAccountModal(false);
+    setShowEditProfile(false);
+    setShowNotifications(false);
+    setShowLinkBank(false);
+    setShowSecuritySettings(false);
+  };
+
   const filteredTransactions = transactions.filter(transaction => {
     const transactionDate = new Date(transaction.date);
     return (
@@ -191,17 +240,15 @@ const Page: React.FC = () => {
     );
   });
 
-  const balance = calculateBalance(transactions);
+  const { totalIncome, totalExpense, balance } = calculateTotals(transactions, selectedMonth);
   const balanceColor = balance >= 0 ? 'text-green-500' : 'text-red-500';
-
-  const { totalIncome, totalExpense } = calculateTotals(transactions);
 
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Header */}
       <header className="bg-teal-600 shadow-md py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">Quản lý chi tiêu</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center">
+          <h1 className="text-2xl font-bold text-white">QUẢN LÝ CHI TIÊU</h1>
         </div>
       </header>
 
@@ -209,10 +256,10 @@ const Page: React.FC = () => {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-6 lg:px-8">
           {/* Balance Display */}
-          <div className="bg-white shadow rounded-lg p-6 text-center">
-            <h2 className="text-2xl font-bold text-red-600 mt-2">HUỲNH THANH HẢI</h2>
-            <h2 className="text-lg font-semibold text-black">
-              Số dư: {formatCurrency(balance)}
+          <div className="bg-white shadow rounded-lg p-4 text-center">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">HUỲNH THANH HẢI</h2>
+            <h2 className="text-lg font-bold text-blue-800" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
+              Số dư: <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{formatCurrency(balance)}</span>
             </h2>
             <div className="mt-4 flex justify-center space-x-2">
               <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory('Chi tiêu')}>
@@ -228,15 +275,15 @@ const Page: React.FC = () => {
           </div>
 
           {/* Category Icons Grid */}
-          <div className="mt-8 grid grid-cols-3 gap-4">
+          <div className="mt-4 grid grid-cols-3 gap-4">
             {categories.map((category) => (
               <div
                 key={category.label}
                 className="bg-gray-200 p-4 rounded-lg text-center cursor-pointer"
                 onClick={() => handleCategoryClick(category.label)}
               >
-                <category.icon className={`text-2xl mx-auto ${category.color}`} />
-                <p className="mt-2">{category.label}</p>
+                <category.icon className={`text-3xl mx-auto ${category.color}`} />
+                <p className="mt-2 text-blue-800 text-sm">{category.label}</p>
               </div>
             ))}
           </div>
@@ -326,7 +373,15 @@ const Page: React.FC = () => {
       {showSummary && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900">Tổng kết</h3>
+            <div className="flex justify-between items-center mb-4">
+              <button className="text-gray-700 px-2" onClick={handlePreviousMonth}>
+                <FaChevronLeft />
+              </button>
+              <h3 className="text-lg font-medium text-gray-900">Tổng kết</h3>
+              <button className="text-gray-700 px-2" onClick={handleNextMonth}>
+                <FaChevronRight />
+              </button>
+            </div>
             <div className="mt-4">
               <p className="text-sm font-medium text-gray-700">Tổng thu nhập: {formatCurrency(totalIncome)}</p>
             </div>
@@ -337,7 +392,10 @@ const Page: React.FC = () => {
               <p className={`text-sm font-medium ${balanceColor}`}>Số dư hiện tại: {formatCurrency(balance)}</p>
             </div>
             <div className="mt-6 flex justify-end">
-              <button className="bg-gray-500 text-white px-4 py-2 rounded ml-2" onClick={closeSummaryModal}>
+              <button className="bg-green-500 text-white px-4 py-2 rounded mr-2" onClick={handleShowAll}>
+                Tất cả
+              </button>
+              <button className="bg-gray-500 text-white px-4 py-2 rounded" onClick={closeSummaryModal}>
                 Đóng
               </button>
             </div>
@@ -350,11 +408,11 @@ const Page: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
             <div className="flex justify-between items-center mb-4">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handlePreviousMonth}>
+              <button className="text-gray-700 px-2" onClick={handlePreviousMonth}>
                 <FaChevronLeft />
               </button>
               <h3 className="text-lg font-medium text-gray-900">Thống kê giao dịch</h3>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={handleNextMonth}>
+              <button className="text-gray-700 px-2" onClick={handleNextMonth}>
                 <FaChevronRight />
               </button>
             </div>
@@ -444,20 +502,163 @@ const Page: React.FC = () => {
         </div>
       )}
 
+      {/* Notifications Modal */}
+      {showNotifications && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Thiết lập thông báo</h3>
+            <div className="mt-4 space-y-2">
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                Nhận thông báo qua Email
+              </label>
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                Nhận thông báo qua SMS
+              </label>
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                Nhận thông báo qua ứng dụng
+              </label>
+            </div>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeNotificationsModal}>
+              Lưu
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Account Modal */}
+      {showAccountModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Thông tin tài khoản</h3>
+            <div className="mt-4 space-y-4">
+              <button className="w-full bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowEditProfile(true)}>
+                <span>Chỉnh sửa thông tin cá nhân</span>
+                <FaUserEdit />
+              </button>
+              <button className="w-full bg-yellow-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={handleNotificationsClick}>
+                <span>Thiết lập thông báo</span>
+                <FaQuestionCircle />
+              </button>
+              <button className="w-full bg-green-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowLinkBank(true)}>
+                <span>Liên kết tài khoản ngân hàng</span>
+                <FaLink />
+              </button>
+              <button className="w-full bg-red-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowSecuritySettings(true)}>
+                <span>Bảo mật</span>
+                <FaLock />
+              </button>
+              <button className="w-full bg-gray-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => alert('Đăng xuất')}>
+                <span>Đăng xuất</span>
+                <FaSignOutAlt />
+              </button>
+            </div>
+
+            <button className="mt-4 bg-red-500 text-white px-4 py-2 rounded" onClick={closeAccountModal}>
+              Đóng
+            </button>
+          </div>
+        </div>
+      )}
+
+    {/* Edit Helpme Modal */}
+      {showHelp && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Trợ giúp</h3>
+            <div className="mt-4">
+        <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ khách hàng qua email hoặc Hotline.</p>
+        <ul className="mt-4 list-disc list-inside">
+          <li>Email: hthai@ntt.edu.vn</li>
+          <li>Hotline: 0888 472 111</li>
+        </ul>
+      </div>
+      <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeHelpModal}>
+        Đóng
+          </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Profile Modal */}
+      {showEditProfile && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Chỉnh sửa thông tin cá nhân</h3>
+            <div className="mt-4 space-y-2">
+              <input type="text" placeholder="Tên đầy đủ" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="email" placeholder="Email" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="password" placeholder="Mật khẩu hiện tại" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="password" placeholder="Mật khẩu mới" className="w-full px-4 py-2 border rounded-lg" />
+            </div>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeAccountModal}>
+              Lưu
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Link Bank Account Modal */}
+      {showLinkBank && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Liên kết tài khoản ngân hàng</h3>
+            <div className="mt-4 space-y-2">
+              <input type="text" placeholder="Tên ngân hàng" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="text" placeholder="Số tài khoản" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="text" placeholder="Chi nhánh" className="w-full px-4 py-2 border rounded-lg" />
+            </div>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeAccountModal}>
+              Lưu
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Security Settings Modal */}
+      {showSecuritySettings && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900">Bảo mật</h3>
+            <div className="mt-4 space-y-2">
+              <label className="flex items-center">
+                <input type="checkbox" className="mr-2" />
+                Kích hoạt xác thực hai yếu tố (2FA)
+              </label>
+              <input type="password" placeholder="Mật khẩu hiện tại" className="w-full px-4 py-2 border rounded-lg" />
+              <input type="password" placeholder="Mật khẩu mới" className="w-full px-4 py-2 border rounded-lg" />
+            </div>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeAccountModal}>
+              Lưu
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-md py-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between">
-          <a href="#" className="flex flex-col items-center text-gray-600 hover:text-gray-800">
+        <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6 flex justify-around space-x-2">
+          <a href="#" className="flex flex-col items-center text-teal-600 hover:text-teal-800">
             <FaHome className="text-2xl" />
             <span className="text-xs">Trang chủ</span>
           </a>
-          <a href="#" className="flex flex-col items-center text-gray-600 hover:text-gray-800" onClick={() => setSelectedCategory('Chi tiêu')}>
-            <FaPlus className="text-2xl" />
-            <span className="text-xs">Thêm</span>
-          </a>
-          <a href="#" className="flex flex-col items-center text-gray-600 hover:text-gray-800" onClick={handleShowStatistics}>
+          <a href="#" className="flex flex-col items-center text-red-600 hover:text-red-800" onClick={handleShowStatistics}>
             <FaChartPie className="text-2xl" />
             <span className="text-xs">Thống kê</span>
+          </a>
+                    <a href="#" className="flex flex-col items-center text-green-600 hover:text-green-800" onClick={() => setSelectedCategory('Chi tiêu')}>
+            <FaPlus className="text-4xl" />
+            <span className="text-xs">Thêm</span>
+          </a>
+          <a href="#" className="flex flex-col items-center text-blue-600 hover:text-blue-800" onClick={handleHelpClick}>
+          <FaQuestionCircle className="text-2xl" />
+            <span className="text-xs">Trợ giúp</span>
+          </a>
+          <a href="#" className="flex flex-col items-center text-teal-600 hover:text-teal-800" onClick={handleAccountClick}>
+            <FaUserCircle className="text-2xl" />
+            <span className="text-xs">Tài khoản</span>
           </a>
         </div>
       </nav>
