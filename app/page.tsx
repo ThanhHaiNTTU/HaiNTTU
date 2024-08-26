@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from 'react';
-import './globals.css';
+import React, { useState, useEffect } from "react";
+import "./globals.css";
 import {
   FaUserCircle,
   FaPlus,
@@ -25,8 +25,12 @@ import {
   FaSignOutAlt,
   FaQuestionCircle,
   FaLink,
-  FaLock
-} from 'react-icons/fa';
+  FaLock,
+  FaApple,
+  FaFacebook,
+  FaGoogle
+
+} from "react-icons/fa";
 
 interface Transaction {
   id: number;
@@ -36,54 +40,54 @@ interface Transaction {
 }
 
 const categories = [
-  { icon: FaMoneyCheckAlt, label: 'Lương', color: 'text-yellow-600' },
-  { icon: FaUtensils, label: 'Ăn uống', color: 'text-blue-600' },
-  { icon: FaPlane, label: 'Du lịch', color: 'text-red-600' },
-  { icon: FaShoppingCart, label: 'Mua sắm', color: 'text-pink-600' },
-  { icon: FaHeartbeat, label: 'Y tế', color: 'text-green-600' },
-  { icon: FaCar, label: 'Xe cộ', color: 'text-yellow-600' },
-  { icon: FaBook, label: 'Sách', color: 'text-blue-600' },
-  { icon: FaGamepad, label: 'Giải trí', color: 'text-red-600' },
-  { icon: FaEllipsisH, label: 'Khác', color: 'text-gray-600' }
+  { icon: FaMoneyCheckAlt, label: "Lương", color: "text-yellow-600" },
+  { icon: FaUtensils, label: "Ăn uống", color: "text-blue-600" },
+  { icon: FaPlane, label: "Du lịch", color: "text-red-600" },
+  { icon: FaShoppingCart, label: "Mua sắm", color: "text-pink-600" },
+  { icon: FaHeartbeat, label: "Y tế", color: "text-green-600" },
+  { icon: FaCar, label: "Xe cộ", color: "text-yellow-600" },
+  { icon: FaBook, label: "Sách", color: "text-blue-600" },
+  { icon: FaGamepad, label: "Giải trí", color: "text-red-600" },
+  { icon: FaEllipsisH, label: "Khác", color: "text-gray-600" },
 ];
 
 const incomeCategories = [
-  { label: 'Lương' },
-  { label: 'Thưởng' },
-  { label: 'Làm thêm' },
-  { label: 'Quà tặng' },
-  { label: 'Đầu tư' },
-  { label: 'Trúng số' }
+  { label: "Lương" },
+  { label: "Thưởng" },
+  { label: "Làm thêm" },
+  { label: "Quà tặng" },
+  { label: "Đầu tư" },
+  { label: "Trúng số" },
 ];
 
-const expenseCategories = categories.filter(category => category.label !== 'Lương');
+const expenseCategories = categories.filter((category) => category.label !== "Lương");
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 };
 
 const formatCurrency = (amount: number) => {
-  return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+  return amount.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 };
 
 const calculateTotals = (transactions: Transaction[], selectedMonth: Date) => {
   let totalIncome = 0;
   let totalExpense = 0;
 
-  transactions.forEach(transaction => {
+  transactions.forEach((transaction) => {
     const transactionDate = new Date(transaction.date);
     if (
       transactionDate.getMonth() === selectedMonth.getMonth() &&
       transactionDate.getFullYear() === selectedMonth.getFullYear()
     ) {
       const amount = parseInt(transaction.amount, 10);
-      if (incomeCategories.some(category => category.label === transaction.type)) {
+      if (incomeCategories.some((category) => category.label === transaction.type)) {
         totalIncome += amount;
-      } else if (expenseCategories.some(category => category.label === transaction.type)) {
+      } else if (expenseCategories.some((category) => category.label === transaction.type)) {
         totalExpense += amount;
       }
     }
@@ -92,21 +96,74 @@ const calculateTotals = (transactions: Transaction[], selectedMonth: Date) => {
   return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
 };
 
-const Page: React.FC = () => {
+const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = () => {
+    // Giả lập đăng nhập thành công
+    if (username === "hthai" && password === "123") {
+      onLogin();
+    } else {
+      alert("Sai tên đăng nhập hoặc mật khẩu");
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <div className="flex justify-center">
+        <h1 className="text-4xl font-bold text-center text-red-800 mb-4">NTTU</h1>
+        </div>
+        <h2 className="text-3xl font-bold text-center text-teal-600 mb-4">QUẢN LÝ CHI TIÊU</h2>
+        <input
+          type="text"
+          placeholder="Tên đăng nhập"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <input
+          type="password"
+          placeholder="Mật khẩu"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <button onClick={handleLogin} className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg">
+          Đăng nhập
+        </button>
+        <div className="flex justify-between mt-4">
+          <a href="#" className="text-blue-600 text-sm">Quên mật khẩu</a>
+          <a href="#" className="text-blue-600 text-sm">Đăng ký</a>
+        </div>
+        <div className="text-center mt-4">
+          <p>Hoặc đăng nhập bằng</p>
+          <div className="flex justify-center space-x-4 mt-2">
+            <FaApple className="text-2xl text-gray-800 cursor-pointer" />
+            <FaFacebook className="text-2xl text-blue-600 cursor-pointer" />
+            <FaGoogle className="text-2xl text-red-600 cursor-pointer" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MainPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [transactionData, setTransactionData] = useState<Transaction>({
     id: Date.now(),
-    date: '',
-    amount: '',
-    type: ''
+    date: "",
+    amount: "",
+    type: "",
   });
   const [showStatistics, setShowStatistics] = useState<boolean>(false);
   const [showSummary, setShowSummary] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formErrors, setFormErrors] = useState<{ date: boolean; amount: boolean }>({ date: false, amount: false });
   const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
-  const [showNotifications, setShowNotifications] = useState<boolean>(false);
   const [showAccountModal, setShowAccountModal] = useState<boolean>(false);
   const [showEditProfile, setShowEditProfile] = useState<boolean>(false);
   const [showLinkBank, setShowLinkBank] = useState<boolean>(false);
@@ -114,7 +171,7 @@ const Page: React.FC = () => {
   const [showHelp, setShowHelp] = useState<boolean>(false);
 
   useEffect(() => {
-    const existingData = localStorage.getItem('transactions');
+    const existingData = localStorage.getItem("transactions");
     if (existingData) {
       setTransactions(JSON.parse(existingData));
     }
@@ -122,7 +179,7 @@ const Page: React.FC = () => {
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
-    setTransactionData({ id: Date.now(), date: '', amount: '', type: category });
+    setTransactionData({ id: Date.now(), date: "", amount: "", type: category });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -138,7 +195,7 @@ const Page: React.FC = () => {
     if (!errors.date && !errors.amount) {
       let newTransactions;
       if (editingId !== null) {
-        newTransactions = transactions.map(transaction =>
+        newTransactions = transactions.map((transaction) =>
           transaction.id === editingId ? { ...transaction, ...transactionData } : transaction
         );
         setEditingId(null);
@@ -146,14 +203,14 @@ const Page: React.FC = () => {
         newTransactions = [...transactions, transactionData];
       }
       setTransactions(newTransactions);
-      localStorage.setItem('transactions', JSON.stringify(newTransactions));
+      localStorage.setItem("transactions", JSON.stringify(newTransactions));
       setSelectedCategory(null);
-      alert('Giao dịch đã được lưu thành công');
+      alert("Giao dịch đã được lưu thành công");
     }
   };
 
   const handleEdit = (id: number) => {
-    const transactionToEdit = transactions.find(transaction => transaction.id === id);
+    const transactionToEdit = transactions.find((transaction) => transaction.id === id);
     if (transactionToEdit) {
       setEditingId(id);
       setTransactionData(transactionToEdit);
@@ -169,14 +226,14 @@ const Page: React.FC = () => {
   };
 
   const handleDelete = (id: number) => {
-    const newTransactions = transactions.filter(transaction => transaction.id !== id);
+    const newTransactions = transactions.filter((transaction) => transaction.id !== id);
     setTransactions(newTransactions);
-    localStorage.setItem('transactions', JSON.stringify(newTransactions));
+    localStorage.setItem("transactions", JSON.stringify(newTransactions));
   };
 
   const handleCancelEdit = () => {
     setEditingId(null);
-    setTransactionData({ id: Date.now(), date: '', amount: '', type: '' });
+    setTransactionData({ id: Date.now(), date: "", amount: "", type: "" });
   };
 
   const closeModal = () => {
@@ -212,14 +269,6 @@ const Page: React.FC = () => {
     setShowSummary(false);
   };
 
-  const handleNotificationsClick = () => {
-    setShowNotifications(true);
-  };
-
-  const closeNotificationsModal = () => {
-    setShowNotifications(false);
-  };
-
   const handleAccountClick = () => {
     setShowAccountModal(true);
   };
@@ -227,12 +276,11 @@ const Page: React.FC = () => {
   const closeAccountModal = () => {
     setShowAccountModal(false);
     setShowEditProfile(false);
-    setShowNotifications(false);
     setShowLinkBank(false);
     setShowSecuritySettings(false);
   };
 
-  const filteredTransactions = transactions.filter(transaction => {
+  const filteredTransactions = transactions.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
     return (
       transactionDate.getMonth() === selectedMonth.getMonth() &&
@@ -241,7 +289,7 @@ const Page: React.FC = () => {
   });
 
   const { totalIncome, totalExpense, balance } = calculateTotals(transactions, selectedMonth);
-  const balanceColor = balance >= 0 ? 'text-green-500' : 'text-red-500';
+  const balanceColor = balance >= 0 ? "text-green-500" : "text-red-500";
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -258,14 +306,14 @@ const Page: React.FC = () => {
           {/* Balance Display */}
           <div className="bg-white shadow rounded-lg p-4 text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">HUỲNH THANH HẢI</h2>
-            <h2 className="text-lg font-bold text-blue-800" style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-              Số dư: <span style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{formatCurrency(balance)}</span>
+            <h2 className="text-lg font-bold text-blue-800" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+              Số dư: <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>{formatCurrency(balance)}</span>
             </h2>
             <div className="mt-4 flex justify-center space-x-2">
-              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory('Chi tiêu')}>
+              <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory("Chi tiêu")}>
                 Thêm chi tiêu
               </button>
-              <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory('Thu nhập')}>
+              <button className="bg-green-500 text-white px-4 py-2 rounded" onClick={() => setSelectedCategory("Thu nhập")}>
                 Thêm thu nhập
               </button>
               <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={handleShowSummary}>
@@ -275,7 +323,7 @@ const Page: React.FC = () => {
           </div>
 
           {/* Category Icons Grid */}
-          <div className="mt-4 grid grid-cols-3 gap-4">
+          <div className="mt-8 grid grid-cols-3 gap-4">
             {categories.map((category) => (
               <div
                 key={category.label}
@@ -287,6 +335,7 @@ const Page: React.FC = () => {
               </div>
             ))}
           </div>
+          <div className="p-6"></div>
         </div>
       </main>
 
@@ -302,7 +351,7 @@ const Page: React.FC = () => {
                 name="date"
                 value={transactionData.date}
                 onChange={handleInputChange}
-                className={`mt-1 px-4 py-2 border rounded-lg w-full ${formErrors.date ? 'border-red-500' : ''}`}
+                className={`mt-1 px-4 py-2 border rounded-lg w-full ${formErrors.date ? "border-red-500" : ""}`}
               />
               {formErrors.date && <p className="text-red-500 text-xs mt-1">Ngày không được để trống</p>}
             </div>
@@ -313,13 +362,13 @@ const Page: React.FC = () => {
                 name="amount"
                 value={transactionData.amount}
                 onChange={handleInputChange}
-                className={`mt-1 px-4 py-2 border rounded-lg w-full ${formErrors.amount ? 'border-red-500' : ''}`}
+                className={`mt-1 px-4 py-2 border rounded-lg w-full ${formErrors.amount ? "border-red-500" : ""}`}
               />
               {formErrors.amount && <p className="text-red-500 text-xs mt-1">Số tiền không được để trống</p>}
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700">Diễn giải</label>
-              {selectedCategory === 'Chi tiêu' ? (
+              {selectedCategory === "Chi tiêu" ? (
                 <select
                   name="type"
                   value={transactionData.type}
@@ -333,7 +382,7 @@ const Page: React.FC = () => {
                     </option>
                   ))}
                 </select>
-              ) : selectedCategory === 'Thu nhập' ? (
+              ) : selectedCategory === "Thu nhập" ? (
                 <select
                   name="type"
                   value={transactionData.type}
@@ -442,7 +491,13 @@ const Page: React.FC = () => {
                           formatDate(transaction.date)
                         )}
                       </td>
-                      <td className={`py-2 px-4 border text-right ${expenseCategories.some(category => category.label === transaction.type) ? 'text-red-500' : 'text-green-500'} h-12`}>
+                      <td
+                        className={`py-2 px-4 border text-right ${
+                          expenseCategories.some((category) => category.label === transaction.type)
+                            ? "text-red-500"
+                            : "text-green-500"
+                        } h-12`}
+                      >
                         {editingId === transaction.id ? (
                           <input
                             type="text"
@@ -502,55 +557,37 @@ const Page: React.FC = () => {
         </div>
       )}
 
-      {/* Notifications Modal */}
-      {showNotifications && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900">Thiết lập thông báo</h3>
-            <div className="mt-4 space-y-2">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                Nhận thông báo qua Email
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                Nhận thông báo qua SMS
-              </label>
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                Nhận thông báo qua ứng dụng
-              </label>
-            </div>
-            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeNotificationsModal}>
-              Lưu
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Account Modal */}
       {showAccountModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h3 className="text-lg font-medium text-gray-900">Thông tin tài khoản</h3>
             <div className="mt-4 space-y-4">
-              <button className="w-full bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowEditProfile(true)}>
+              <button
+                className="w-full bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between"
+                onClick={() => setShowEditProfile(true)}
+              >
                 <span>Chỉnh sửa thông tin cá nhân</span>
                 <FaUserEdit />
               </button>
-              <button className="w-full bg-yellow-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={handleNotificationsClick}>
-                <span>Thiết lập thông báo</span>
-                <FaQuestionCircle />
-              </button>
-              <button className="w-full bg-green-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowLinkBank(true)}>
+              <button
+                className="w-full bg-green-500 text-white px-4 py-2 rounded flex items-center justify-between"
+                onClick={() => setShowLinkBank(true)}
+              >
                 <span>Liên kết tài khoản ngân hàng</span>
                 <FaLink />
               </button>
-              <button className="w-full bg-red-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowSecuritySettings(true)}>
+              <button
+                className="w-full bg-red-500 text-white px-4 py-2 rounded flex items-center justify-between"
+                onClick={() => setShowSecuritySettings(true)}
+              >
                 <span>Bảo mật</span>
                 <FaLock />
               </button>
-              <button className="w-full bg-gray-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => alert('Đăng xuất')}>
+              <button
+                className="w-full bg-gray-500 text-white px-4 py-2 rounded flex items-center justify-between"
+                onClick={() => alert("Đăng xuất")}
+              >
                 <span>Đăng xuất</span>
                 <FaSignOutAlt />
               </button>
@@ -563,21 +600,23 @@ const Page: React.FC = () => {
         </div>
       )}
 
-    {/* Edit Helpme Modal */}
+      {/* Help Modal */}
       {showHelp && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h3 className="text-lg font-medium text-gray-900">Trợ giúp</h3>
             <div className="mt-4">
-        <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ khách hàng qua email hoặc Hotline.</p>
-        <ul className="mt-4 list-disc list-inside">
-          <li>Email: hthai@ntt.edu.vn</li>
-          <li>Hotline: 0888 472 111</li>
-        </ul>
-      </div>
-      <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeHelpModal}>
-        Đóng
-          </button>
+              <p>
+                Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ khách hàng qua email hoặc Hotline.
+              </p>
+              <ul className="mt-4 list-disc list-inside">
+                <li>Email: support@example.com</li>
+                <li>Hotline: 1900 123 456</li>
+              </ul>
+            </div>
+            <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeHelpModal}>
+              Đóng
+            </button>
           </div>
         </div>
       )}
@@ -648,12 +687,12 @@ const Page: React.FC = () => {
             <FaChartPie className="text-2xl" />
             <span className="text-xs">Thống kê</span>
           </a>
-                    <a href="#" className="flex flex-col items-center text-green-600 hover:text-green-800" onClick={() => setSelectedCategory('Chi tiêu')}>
+          <a href="#" className="flex flex-col items-center text-green-600 hover:text-green-800" onClick={() => setSelectedCategory("Chi tiêu")}>
             <FaPlus className="text-4xl" />
             <span className="text-xs">Thêm</span>
           </a>
           <a href="#" className="flex flex-col items-center text-blue-600 hover:text-blue-800" onClick={handleHelpClick}>
-          <FaQuestionCircle className="text-2xl" />
+            <FaQuestionCircle className="text-2xl" />
             <span className="text-xs">Trợ giúp</span>
           </a>
           <a href="#" className="flex flex-col items-center text-teal-600 hover:text-teal-800" onClick={handleAccountClick}>
@@ -664,6 +703,16 @@ const Page: React.FC = () => {
       </nav>
     </div>
   );
+};
+
+const Page: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
+
+  return isLoggedIn ? <MainPage /> : <LoginPage onLogin={handleLogin} />;
 };
 
 export default Page;
