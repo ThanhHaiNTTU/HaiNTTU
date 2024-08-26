@@ -36,6 +36,8 @@ interface Transaction {
   date: string;
   amount: string;
   type: string;
+  subType?: string;
+  customDescription?: string;
 }
 
 const categories = [
@@ -59,9 +61,16 @@ const incomeCategories = [
   { label: "Trúng số" },
 ];
 
-const expenseCategories = categories.filter(
-  (category) => category.label !== "Lương"
-);
+const expenseCategoriesWithSub: { [key: string]: string[] } = {
+  "Ăn uống": ["Nhà hàng", "Cà phê", "Đồ ăn nhanh"],
+  "Du lịch": ["Vé máy bay", "Khách sạn", "Tour"],
+  "Mua sắm": ["Quần áo", "Điện tử", "Nội thất"],
+  "Y tế": ["Khám bệnh", "Mua thuốc", "Bảo hiểm"],
+  "Xe cộ": ["Xăng dầu", "Sửa chữa", "Bảo hiểm xe"],
+  "Sách": ["Sách giáo khoa", "Truyện", "Tài liệu học tập"],
+  "Giải trí": ["Xem phim", "Game", "Nhạc sống"],
+  "Khác": ["Khác 1", "Khác 2"], // Dành cho các mục tự tạo hoặc mục chưa định danh
+};
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -94,7 +103,7 @@ const calculateTotals = (transactions: Transaction[], selectedMonth: Date) => {
       ) {
         totalIncome += amount;
       } else if (
-        expenseCategories.some((category) => category.label === transaction.type)
+        Object.keys(expenseCategoriesWithSub).includes(transaction.type)
       ) {
         totalExpense += amount;
       }
@@ -120,8 +129,16 @@ const LoginPage: React.FC<{
   const [username, setUsername] = useState(defaultUsername);
   const [password, setPassword] = useState(defaultPassword);
 
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    if (savedUsername) {
+      setUsername(savedUsername);
+    }
+  }, []);
+
   const handleLogin = () => {
     if (username === "hthai" && password === "123") {
+      localStorage.setItem("username", username);
       onLogin();
     } else {
       alert("Sai tên đăng nhập hoặc mật khẩu");
@@ -196,7 +213,6 @@ const RegisterPage: React.FC<{
   const [password, setPassword] = useState("");
 
   const handleRegister = () => {
-    // Xử lý đăng ký (ví dụ: lưu thông tin người dùng)
     onRegisterComplete(username, password);
     alert("Đăng ký thành công");
   };
@@ -259,7 +275,6 @@ const ForgotPasswordPage: React.FC<{
   const [email, setEmail] = useState("");
 
   const handleResetPassword = () => {
-    // Xử lý yêu cầu đặt lại mật khẩu
     onResetComplete();
     alert("Yêu cầu đặt lại mật khẩu đã được gửi");
   };
@@ -318,11 +333,17 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     false
   );
   const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [descriptionHistory, setDescriptionHistory] = useState<string[]>([]);
 
   useEffect(() => {
     const existingData = localStorage.getItem("transactions");
     if (existingData) {
       setTransactions(JSON.parse(existingData));
+    }
+
+    const savedHistory = localStorage.getItem("descriptionHistory");
+    if (savedHistory) {
+      setDescriptionHistory(JSON.parse(savedHistory));
     }
   }, []);
 
@@ -339,21 +360,32 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   };
 
   const handleFormSubmit = () => {
-    const { date, amount } = transactionData;
+    const { date, amount, type, subType, customDescription } = transactionData;
     const errors = { date: !date, amount: !amount };
     setFormErrors(errors);
 
     if (!errors.date && !errors.amount) {
+      const newTransaction = { ...transactionData, id: Date.now() };
       let newTransactions;
+
+      // Lưu trữ lịch sử diễn giải
+      let updatedHistory = descriptionHistory;
+      if (customDescription && !descriptionHistory.includes(customDescription)) {
+        updatedHistory = [...descriptionHistory, customDescription];
+        localStorage.setItem("descriptionHistory", JSON.stringify(updatedHistory));
+      }
+
+      setDescriptionHistory(updatedHistory);
+
       if (editingId !== null) {
         newTransactions = transactions.map((transaction) =>
           transaction.id === editingId
-            ? { ...transaction, ...transactionData }
+            ? newTransaction
             : transaction
         );
         setEditingId(null);
       } else {
-        newTransactions = [...transactions, transactionData];
+        newTransactions = [...transactions, newTransaction];
       }
       setTransactions(newTransactions);
       localStorage.setItem("transactions", JSON.stringify(newTransactions));
@@ -570,19 +602,47 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 Diễn giải
               </label>
               {selectedCategory === "Chi tiêu" ? (
-                <select
-                  name="type"
-                  value={transactionData.type}
-                  onChange={handleInputChange}
-                  className="mt-1 px-4 py-2 border rounded-lg w-full bg-white"
-                >
-                  <option value="">Chọn loại chi tiêu</option>
-                  {expenseCategories.map((category) => (
-                    <option key={category.label} value={category.label}>
-                      {category.label}
-                    </option>
-                  ))}
-                </select>
+                <>
+                  <select
+                    name="type"
+                    value={transactionData.type}
+                    onChange={handleInputChange}
+                    className="mt-1 px-4 py-2 border rounded-lg w-full bg-white"
+                  >
+                    <option value="">Chọn loại chi tiêu</option>
+                    {Object.keys(expenseCategoriesWithSub).map((category) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+
+                  {transactionData.type && expenseCategoriesWithSub[transactionData.type] && (
+                    <select
+                      name="subType"
+                      value={transactionData.subType || ""}
+                      onChange={(e) => setTransactionData({ ...transactionData, subType: e.target.value })}
+                      className="mt-2 px-4 py-2 border rounded-lg w-full bg-white"
+                    >
+                      <option value="">Chọn diễn giải chi tiết</option>
+                      {expenseCategoriesWithSub[transactionData.type].map((subType) => (
+                        <option key={subType} value={subType}>
+                          {subType}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+
+                  {/* Trường nhập liệu tùy chỉnh */}
+                  <input
+                    type="text"
+                    name="customDescription"
+                    value={transactionData.customDescription || ""}
+                    onChange={(e) => setTransactionData({ ...transactionData, customDescription: e.target.value })}
+                    placeholder="Nhập diễn giải cụ thể"
+                    className="mt-2 px-4 py-2 border rounded-lg w-full"
+                  />
+                </>
               ) : selectedCategory === "Thu nhập" ? (
                 <select
                   name="type"
@@ -607,6 +667,29 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 />
               )}
             </div>
+
+            {/* Hiển thị lịch sử diễn giải */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700">
+                Lịch sử diễn giải
+              </label>
+              {descriptionHistory.length > 0 && (
+                <select
+                  name="customDescription"
+                  value={transactionData.customDescription || ""}
+                  onChange={(e) => setTransactionData({ ...transactionData, customDescription: e.target.value })}
+                  className="mt-1 px-4 py-2 border rounded-lg w-full bg-white"
+                >
+                  <option value="">Chọn từ lịch sử</option>
+                  {descriptionHistory.map((desc, index) => (
+                    <option key={index} value={desc}>
+                      {desc}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
             <div className="mt-6 flex justify-end">
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
@@ -722,9 +805,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                       </td>
                       <td
                         className={`py-2 px-4 border text-right ${
-                          expenseCategories.some(
-                            (category) => category.label === transaction.type
-                          )
+                          Object.keys(expenseCategoriesWithSub).includes(transaction.type)
                             ? "text-red-500"
                             : "text-green-500"
                         } h-12`}
@@ -743,15 +824,31 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                       </td>
                       <td className="py-2 px-4 border h-12">
                         {editingId === transaction.id ? (
-                          <input
-                            type="text"
-                            name="type"
-                            value={transactionData.type}
-                            onChange={handleInputChange}
-                            className="mt-1 px-4 py-2 border rounded-lg w-full"
-                          />
+                          <>
+                            <select
+                              name="subType"
+                              value={transactionData.subType || ""}
+                              onChange={(e) => setTransactionData({ ...transactionData, subType: e.target.value })}
+                              className="mt-2 px-4 py-2 border rounded-lg w-full bg-white"
+                            >
+                              <option value="">Chọn diễn giải chi tiết</option>
+                              {expenseCategoriesWithSub[transactionData.type].map((subType) => (
+                                <option key={subType} value={subType}>
+                                  {subType}
+                                </option>
+                              ))}
+                            </select>
+                            <input
+                              type="text"
+                              name="customDescription"
+                              value={transactionData.customDescription || ""}
+                              onChange={(e) => setTransactionData({ ...transactionData, customDescription: e.target.value })}
+                              placeholder="Nhập diễn giải cụ thể"
+                              className="mt-2 px-4 py-2 border rounded-lg w-full"
+                            />
+                          </>
                         ) : (
-                          transaction.type
+                          `${transaction.subType || ''} ${transaction.customDescription || ''}`
                         )}
                       </td>
                       <td className="py-2 px-4 border flex space-x-2 justify-center h-12">
