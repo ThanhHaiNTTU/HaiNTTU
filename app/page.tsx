@@ -29,7 +29,6 @@ import {
   FaApple,
   FaFacebook,
   FaGoogle
-
 } from "react-icons/fa";
 
 interface Transaction {
@@ -96,26 +95,29 @@ const calculateTotals = (transactions: Transaction[], selectedMonth: Date) => {
   return { totalIncome, totalExpense, balance: totalIncome - totalExpense };
 };
 
-const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
+const LoginPage: React.FC<{ onLogin: () => void; onRegister: () => void; onForgotPassword: () => void }> = ({ onLogin, onRegister, onForgotPassword }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // Giả lập đăng nhập thành công
     if (username === "hthai" && password === "123") {
       onLogin();
     } else {
       alert("Sai tên đăng nhập hoặc mật khẩu");
     }
   };
-
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleLogin();
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <div className="flex justify-center">
-        <h1 className="text-4xl font-bold text-center text-red-800 mb-4">NTTU</h1>
+          <h1 className="text-4xl font-bold text-center text-red-600 mb-4">NTTU</h1>
         </div>
-        <h2 className="text-3xl font-bold text-center text-teal-600 mb-4">QUẢN LÝ CHI TIÊU</h2>
+        <h2 className="text-3xl font-bold text-center text-teal-600 mb-4">Đăng nhập</h2>
         <input
           type="text"
           placeholder="Tên đăng nhập"
@@ -128,29 +130,110 @@ const LoginPage: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
           placeholder="Mật khẩu"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={handleKeyDown} 
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
         <button onClick={handleLogin} className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg">
           Đăng nhập
         </button>
         <div className="flex justify-between mt-4">
-          <a href="#" className="text-blue-600 text-sm">Quên mật khẩu</a>
-          <a href="#" className="text-blue-600 text-sm">Đăng ký</a>
+          <button onClick={onForgotPassword} className="text-blue-600 hover:underline">
+            Quên mật khẩu
+          </button>
+          <button onClick={onRegister} className="text-blue-600 hover:underline">
+            Đăng ký
+          </button>
         </div>
-        <div className="text-center mt-4">
-          <p>Hoặc đăng nhập bằng</p>
-          <div className="flex justify-center space-x-4 mt-2">
-            <FaApple className="text-2xl text-gray-800 cursor-pointer" />
-            <FaFacebook className="text-2xl text-blue-600 cursor-pointer" />
-            <FaGoogle className="text-2xl text-red-600 cursor-pointer" />
-          </div>
+        <div className="flex justify-center mt-4">
+          <FaApple className="text-2xl mx-2 cursor-pointer" />
+          <FaFacebook className="text-2xl mx-2 cursor-pointer" />
+          <FaGoogle className="text-2xl mx-2 cursor-pointer" />
         </div>
       </div>
     </div>
   );
 };
 
-const MainPage: React.FC = () => {
+const RegisterPage: React.FC<{ onRegisterComplete: () => void }> = ({ onRegisterComplete }) => {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegister = () => {
+    // Xử lý đăng ký (ví dụ: lưu thông tin người dùng)
+    onRegisterComplete();
+    alert("Đăng ký thành công");
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h2 className="text-2xl font-bold text-center text-teal-600 mb-4">Đăng ký</h2>
+        <input
+          type="text"
+          placeholder="Tên đăng nhập"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <input
+          type="email"
+          placeholder="Email hoặc Số điện thoại"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <input
+          type="password"
+          placeholder="Mật khẩu"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <input
+          type="password"
+          placeholder="Xác nhận lại Mật khẩu"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <button onClick={handleRegister} className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg">
+          Đăng ký
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const ForgotPasswordPage: React.FC<{ onResetComplete: () => void }> = ({ onResetComplete }) => {
+  const [email, setEmail] = useState("");
+
+  const handleResetPassword = () => {
+    // Xử lý yêu cầu đặt lại mật khẩu
+    onResetComplete();
+    alert("Yêu cầu đặt lại mật khẩu đã được gửi");
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        <h2 className="text-2xl font-bold text-center text-teal-600 mb-4">Quên mật khẩu</h2>
+        <input
+          type="email"
+          placeholder="Email hoặc Số điện thoại"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full px-4 py-2 mb-4 border rounded-lg"
+        />
+        <button onClick={handleResetPassword} className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg">
+          Đặt lại mật khẩu
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [transactionData, setTransactionData] = useState<Transaction>({
@@ -280,12 +363,14 @@ const MainPage: React.FC = () => {
     setShowSecuritySettings(false);
   };
 
+  const handleLogoutClick = () => {
+    onLogout();
+    closeAccountModal();
+  };
+
   const filteredTransactions = transactions.filter((transaction) => {
     const transactionDate = new Date(transaction.date);
-    return (
-      transactionDate.getMonth() === selectedMonth.getMonth() &&
-      transactionDate.getFullYear() === selectedMonth.getFullYear()
-    );
+    return transactionDate.getMonth() === selectedMonth.getMonth() && transactionDate.getFullYear() === selectedMonth.getFullYear();
   });
 
   const { totalIncome, totalExpense, balance } = calculateTotals(transactions, selectedMonth);
@@ -293,17 +378,14 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Header */}
       <header className="bg-teal-600 shadow-md py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center items-center">
           <h1 className="text-2xl font-bold text-white">QUẢN LÝ CHI TIÊU</h1>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 sm:px-6 lg:px-8">
-          {/* Balance Display */}
           <div className="bg-white shadow rounded-lg p-4 text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">HUỲNH THANH HẢI</h2>
             <h2 className="text-lg font-bold text-blue-800" style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
@@ -322,14 +404,9 @@ const MainPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Category Icons Grid */}
           <div className="mt-8 grid grid-cols-3 gap-4">
             {categories.map((category) => (
-              <div
-                key={category.label}
-                className="bg-gray-200 p-4 rounded-lg text-center cursor-pointer"
-                onClick={() => handleCategoryClick(category.label)}
-              >
+              <div key={category.label} className="bg-gray-200 p-4 rounded-lg text-center cursor-pointer" onClick={() => handleCategoryClick(category.label)}>
                 <category.icon className={`text-3xl mx-auto ${category.color}`} />
                 <p className="mt-2 text-blue-800 text-sm">{category.label}</p>
               </div>
@@ -339,7 +416,6 @@ const MainPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Transaction Form Modal */}
       {selectedCategory && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -397,13 +473,7 @@ const MainPage: React.FC = () => {
                   ))}
                 </select>
               ) : (
-                <input
-                  type="text"
-                  name="type"
-                  value={transactionData.type}
-                  readOnly
-                  className="mt-1 px-4 py-2 border rounded-lg w-full bg-gray-100"
-                />
+                <input type="text" name="type" value={transactionData.type} readOnly className="mt-1 px-4 py-2 border rounded-lg w-full bg-gray-100" />
               )}
             </div>
             <div className="mt-6 flex justify-end">
@@ -418,7 +488,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Summary Modal */}
       {showSummary && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -452,7 +521,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Statistics Modal */}
       {showStatistics && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
@@ -557,37 +625,24 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Account Modal */}
       {showAccountModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h3 className="text-lg font-medium text-gray-900">Thông tin tài khoản</h3>
             <div className="mt-4 space-y-4">
-              <button
-                className="w-full bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between"
-                onClick={() => setShowEditProfile(true)}
-              >
+              <button className="w-full bg-blue-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowEditProfile(true)}>
                 <span>Chỉnh sửa thông tin cá nhân</span>
                 <FaUserEdit />
               </button>
-              <button
-                className="w-full bg-green-500 text-white px-4 py-2 rounded flex items-center justify-between"
-                onClick={() => setShowLinkBank(true)}
-              >
+              <button className="w-full bg-green-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowLinkBank(true)}>
                 <span>Liên kết tài khoản ngân hàng</span>
                 <FaLink />
               </button>
-              <button
-                className="w-full bg-red-500 text-white px-4 py-2 rounded flex items-center justify-between"
-                onClick={() => setShowSecuritySettings(true)}
-              >
+              <button className="w-full bg-red-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={() => setShowSecuritySettings(true)}>
                 <span>Bảo mật</span>
                 <FaLock />
               </button>
-              <button
-                className="w-full bg-gray-500 text-white px-4 py-2 rounded flex items-center justify-between"
-                onClick={() => alert("Đăng xuất")}
-              >
+              <button className="w-full bg-gray-500 text-white px-4 py-2 rounded flex items-center justify-between" onClick={handleLogoutClick}>
                 <span>Đăng xuất</span>
                 <FaSignOutAlt />
               </button>
@@ -600,18 +655,15 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Help Modal */}
       {showHelp && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
             <h3 className="text-lg font-medium text-gray-900">Trợ giúp</h3>
             <div className="mt-4">
-              <p>
-                Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ khách hàng qua email hoặc Hotline.
-              </p>
+              <p>Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận hỗ trợ khách hàng qua email hoặc Hotline.</p>
               <ul className="mt-4 list-disc list-inside">
-                <li>Email: support@example.com</li>
-                <li>Hotline: 1900 123 456</li>
+                <li>Email: hthai@ntt.edu.vn</li>
+                <li>Hotline: 0888 472 111</li>
               </ul>
             </div>
             <button className="mt-4 bg-blue-500 text-white px-4 py-2 rounded" onClick={closeHelpModal}>
@@ -621,7 +673,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Edit Profile Modal */}
       {showEditProfile && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -639,7 +690,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Link Bank Account Modal */}
       {showLinkBank && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -656,7 +706,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Security Settings Modal */}
       {showSecuritySettings && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
@@ -676,7 +725,6 @@ const MainPage: React.FC = () => {
         </div>
       )}
 
-      {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white shadow-md py-2">
         <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6 flex justify-around space-x-2">
           <a href="#" className="flex flex-col items-center text-teal-600 hover:text-teal-800">
@@ -707,12 +755,43 @@ const MainPage: React.FC = () => {
 
 const Page: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
 
-  return isLoggedIn ? <MainPage /> : <LoginPage onLogin={handleLogin} />;
+  const handleRegister = () => {
+    setIsRegistering(true);
+  };
+
+  const handleRegisterComplete = () => {
+    setIsRegistering(false);
+    setIsLoggedIn(true);
+  };
+
+  const handleForgotPassword = () => {
+    setIsResettingPassword(true);
+  };
+
+  const handleResetComplete = () => {
+    setIsResettingPassword(false);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  if (isLoggedIn) {
+    return <MainPage onLogout={handleLogout} />;
+  } else if (isRegistering) {
+    return <RegisterPage onRegisterComplete={handleRegisterComplete} />;
+  } else if (isResettingPassword) {
+    return <ForgotPasswordPage onResetComplete={handleResetComplete} />;
+  } else {
+    return <LoginPage onLogin={handleLogin} onRegister={handleRegister} onForgotPassword={handleForgotPassword} />;
+  }
 };
 
 export default Page;
