@@ -172,26 +172,27 @@ const LoginPage: React.FC<{
           onChange={(e) => setUsername(e.target.value)}
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
-        <div className="relative">
+        <div className="relative mb-4">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full px-4 py-2 mb-4 border rounded-lg"
+            className="w-full px-4 py-2 pr-10 border rounded-lg"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+            className="absolute inset-y-0 right-0 pr-3"
+            style={{ lineHeight: "2.5rem" }}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
         <button
           onClick={handleLogin}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg mt-4"
+          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg"
         >
           Đăng nhập
         </button>
@@ -257,35 +258,37 @@ const RegisterPage: React.FC<{
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
 
-        <div className="relative">
+        <div className="relative mb-4">
           <input
             type={showPassword ? "text" : "password"}
             placeholder="Mật khẩu"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 mb-4 border rounded-lg"
+            className="w-full px-4 py-2 pr-10 border rounded-lg"
           />
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+            className="absolute inset-y-0 right-0 pr-3"
+            style={{ lineHeight: "2.5rem" }}
           >
             {showPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
         </div>
 
-        <div className="relative">
+        <div className="relative mb-4">
           <input
             type={showConfirmPassword ? "text" : "password"}
             placeholder="Xác nhận lại Mật khẩu"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full px-4 py-2 mb-4 border rounded-lg"
+            className="w-full px-4 py-2 pr-10 border rounded-lg"
           />
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+            className="absolute inset-y-0 right-0 pr-3"
+            style={{ lineHeight: "2.5rem" }}
           >
             {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
           </button>
@@ -293,7 +296,7 @@ const RegisterPage: React.FC<{
 
         <button
           onClick={handleRegister}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg mt-4"
+          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg"
         >
           Đăng ký
         </button>
