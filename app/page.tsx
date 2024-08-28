@@ -29,6 +29,8 @@ import {
   FaApple,
   FaFacebook,
   FaGoogle,
+  FaEye,
+  FaEyeSlash,
 } from "react-icons/fa";
 
 interface Transaction {
@@ -128,6 +130,7 @@ const LoginPage: React.FC<{
 }) => {
   const [username, setUsername] = useState(defaultUsername);
   const [password, setPassword] = useState(defaultPassword);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     const savedUsername = localStorage.getItem("username");
@@ -169,17 +172,26 @@ const LoginPage: React.FC<{
           onChange={(e) => setUsername(e.target.value)}
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
-        <input
-          type="password"
-          placeholder="Mật khẩu"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="w-full px-4 py-2 mb-4 border rounded-lg"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Mật khẩu"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="w-full px-4 py-2 mb-4 border rounded-lg"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
         <button
           onClick={handleLogin}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg"
+          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg mt-4"
         >
           Đăng nhập
         </button>
@@ -211,8 +223,15 @@ const RegisterPage: React.FC<{
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = () => {
+    if (password !== confirmPassword) {
+      alert("Mật khẩu và xác nhận mật khẩu không khớp");
+      return;
+    }
     onRegisterComplete(username, password);
     alert("Đăng ký thành công");
   };
@@ -237,23 +256,44 @@ const RegisterPage: React.FC<{
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
-        <input
-          type="password"
-          placeholder="Mật khẩu"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-2 mb-4 border rounded-lg"
-        />
-        <input
-          type="password"
-          placeholder="Xác nhận lại Mật khẩu"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full px-4 py-2 mb-4 border rounded-lg"
-        />
+
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Mật khẩu"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-2 mb-4 border rounded-lg"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+
+        <div className="relative">
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            placeholder="Xác nhận lại Mật khẩu"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            className="w-full px-4 py-2 mb-4 border rounded-lg"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+          >
+            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+
         <button
           onClick={handleRegister}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg"
+          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg mt-4"
         >
           Đăng ký
         </button>
