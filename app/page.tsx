@@ -140,7 +140,16 @@ const LoginPage: React.FC<{
   }, []);
 
   const handleLogin = () => {
-    if (username === "hthai" && password === "123") {
+    // Lấy danh sách người dùng từ localStorage
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    // Kiểm tra thông tin đăng nhập
+    const user = users.find(
+      (user: { username: string; password: string }) =>
+        user.username === username && user.password === password
+    );
+
+    if (user) {
       localStorage.setItem("username", username);
       onLogin();
     } else {
@@ -229,10 +238,31 @@ const RegisterPage: React.FC<{
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = () => {
+    // Kiểm tra mật khẩu và xác nhận mật khẩu có khớp không
     if (password !== confirmPassword) {
       alert("Mật khẩu và xác nhận mật khẩu không khớp");
       return;
     }
+
+    // Lấy danh sách người dùng từ localStorage
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+    // Kiểm tra xem tên đăng nhập đã tồn tại chưa
+    const userExists = users.some((user: { username: string }) => user.username === username);
+
+    if (userExists) {
+      alert("Tên đăng nhập đã tồn tại, vui lòng chọn tên khác");
+      return;
+    }
+
+    // Nếu chưa tồn tại, thêm tài khoản mới vào danh sách
+    const newUser = { username, password, email };
+    users.push(newUser);
+
+    // Lưu danh sách người dùng mới vào localStorage
+    localStorage.setItem("users", JSON.stringify(users));
+
+    // Hoàn tất quá trình đăng ký
     onRegisterComplete(username, password);
     alert("Đăng ký thành công");
   };
