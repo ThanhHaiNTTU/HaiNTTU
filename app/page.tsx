@@ -151,6 +151,7 @@ const LoginPage: React.FC<{
 
     if (user) {
       localStorage.setItem("username", username);
+      localStorage.setItem("isLoggedIn", "true"); // Lưu trạng thái đăng nhập
       onLogin();
     } else {
       alert("Sai tên đăng nhập hoặc mật khẩu");
@@ -548,6 +549,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
   const handleLogoutClick = () => {
     onLogout();
+    localStorage.removeItem("isLoggedIn"); // Xóa trạng thái đăng nhập khỏi localStorage
     closeAccountModal();
   };
 
@@ -577,7 +579,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow rounded-lg p-4 text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">
-              HUỲNH THANH HẢI
+              Xin chào, HUỲNH THANH HẢI
             </h2>
             <h2
               className="text-lg font-bold text-blue-800"
@@ -1201,6 +1203,13 @@ const Page: React.FC = () => {
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [defaultUsername, setDefaultUsername] = useState<string>("");
   const [defaultPassword, setDefaultPassword] = useState<string>("");
+
+  useEffect(() => {
+    const loggedInStatus = localStorage.getItem("isLoggedIn");
+    if (loggedInStatus === "true") {
+      setIsLoggedIn(true);
+    }
+  }, []);
 
   const handleLogin = () => {
     setIsLoggedIn(true);

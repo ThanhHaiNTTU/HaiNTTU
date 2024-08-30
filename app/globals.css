@@ -143,5 +143,10 @@ body.dark-theme {
   color: #333;
 }
 
+.statistics-modal-content {
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
   /* Add more classes as needed */
   
