@@ -833,7 +833,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
       {showStatistics && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl w-full">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-4xl max-h-[70vh] w-full">
             <div className="flex justify-between items-center mb-4">
               <button
                 className="text-gray-700 px-2"
@@ -848,7 +848,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 <FaChevronRight />
               </button>
             </div>
-            <div className="overflow-x-auto mt-4">
+            <div className="overflow-auto mt-4 max-h-72">
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
