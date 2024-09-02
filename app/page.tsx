@@ -71,7 +71,7 @@ const expenseCategoriesWithSub: { [key: string]: string[] } = {
   "Xe cộ": ["Xăng dầu", "Sửa chữa", "Bảo hiểm xe"],
   "Sách": ["Sách giáo khoa", "Truyện", "Tài liệu học tập"],
   "Giải trí": ["Xem phim", "Game", "Nhạc sống"],
-  "Khác": ["Khác 1", "Khác 2"], // Dành cho các mục tự tạo hoặc mục chưa định danh
+  "Khác": ["Khác 1", "Khác 2"], 
 };
 
 const formatDate = (dateString: string) => {
@@ -140,10 +140,8 @@ const LoginPage: React.FC<{
   }, []);
 
   const handleLogin = () => {
-    // Lấy danh sách người dùng từ localStorage
     const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    // Kiểm tra thông tin đăng nhập
     const user = users.find(
       (user: { username: string; password: string }) =>
         user.username === username && user.password === password
@@ -151,7 +149,7 @@ const LoginPage: React.FC<{
 
     if (user) {
       localStorage.setItem("username", username);
-      localStorage.setItem("isLoggedIn", "true"); // Lưu trạng thái đăng nhập
+      localStorage.setItem("isLoggedIn", "true");
       onLogin();
     } else {
       alert("Sai tên đăng nhập hoặc mật khẩu");
@@ -239,16 +237,13 @@ const RegisterPage: React.FC<{
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = () => {
-    // Kiểm tra mật khẩu và xác nhận mật khẩu có khớp không
     if (password !== confirmPassword) {
       alert("Mật khẩu và xác nhận mật khẩu không khớp");
       return;
     }
 
-    // Lấy danh sách người dùng từ localStorage
     const users = JSON.parse(localStorage.getItem("users") || "[]");
 
-    // Kiểm tra xem tên đăng nhập đã tồn tại chưa
     const userExists = users.some((user: { username: string }) => user.username === username);
 
     if (userExists) {
@@ -256,14 +251,11 @@ const RegisterPage: React.FC<{
       return;
     }
 
-    // Nếu chưa tồn tại, thêm tài khoản mới vào danh sách
     const newUser = { username, password, email };
     users.push(newUser);
 
-    // Lưu danh sách người dùng mới vào localStorage
     localStorage.setItem("users", JSON.stringify(users));
 
-    // Hoàn tất quá trình đăng ký
     onRegisterComplete(username, password);
     alert("Đăng ký thành công");
   };
@@ -325,18 +317,20 @@ const RegisterPage: React.FC<{
           </button>
         </div>
 
-        <button
-          onClick={handleRegister}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg"
-        >
-          Đăng ký
-        </button>
-        <button
-          onClick={onCancel}
-          className="bg-red-500 text-white w-full px-4 py-2 rounded-lg mt-2"
-        >
-          Hủy bỏ
-        </button>
+        <div className="mt-4 flex justify-between">
+          <button
+            onClick={handleRegister}
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg"
+          >
+            Đăng ký
+          </button>
+          <button
+            onClick={onCancel}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+          >
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -366,18 +360,20 @@ const ForgotPasswordPage: React.FC<{
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-4 py-2 mb-4 border rounded-lg"
         />
-        <button
-          onClick={handleResetPassword}
-          className="bg-teal-600 text-white w-full px-4 py-2 rounded-lg mb-2"
-        >
-          Đặt lại mật khẩu
-        </button>
-        <button
-          onClick={onCancel}
-          className="bg-red-500 text-white w-full px-4 py-2 rounded-lg text-center"
-        >
-          Hủy bỏ
-        </button>
+        <div className="mt-4 flex justify-between">
+          <button
+            onClick={handleResetPassword}
+            className="bg-teal-600 text-white px-4 py-2 rounded-lg"
+          >
+            Đặt lại mật khẩu
+          </button>
+          <button
+            onClick={onCancel}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg"
+          >
+            Đóng
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -421,6 +417,18 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     }
   }, []);
 
+  const closeEditProfile = () => {
+    setShowEditProfile(false);
+  };
+
+  const closeLinkBank = () => {
+    setShowLinkBank(false);
+  };
+
+  const closeSecuritySettings = () => {
+    setShowSecuritySettings(false);
+  };
+
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
     setTransactionData({ id: Date.now(), date: "", amount: "", type: category });
@@ -442,7 +450,6 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
       const newTransaction = { ...transactionData, id: Date.now() };
       let newTransactions;
 
-      // Lưu trữ lịch sử diễn giải
       let updatedHistory = descriptionHistory;
       if (customDescription && !descriptionHistory.includes(customDescription)) {
         updatedHistory = [...descriptionHistory, customDescription];
@@ -549,7 +556,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
 
   const handleLogoutClick = () => {
     onLogout();
-    localStorage.removeItem("isLoggedIn"); // Xóa trạng thái đăng nhập khỏi localStorage
+    localStorage.removeItem("isLoggedIn");
     closeAccountModal();
   };
 
@@ -708,7 +715,6 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                     </select>
                   )}
 
-                  {/* Trường nhập liệu tùy chỉnh */}
                   <input
                     type="text"
                     name="customDescription"
@@ -743,7 +749,6 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
               )}
             </div>
 
-            {/* Hiển thị lịch sử diễn giải */}
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700">
                 Lịch sử diễn giải
@@ -1077,12 +1082,20 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
-            <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={closeAccountModal}
-            >
-              Lưu
-            </button>
+            <div className="mt-4 flex justify-start space-x-2">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={closeEditProfile}
+              >
+                Lưu
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={closeEditProfile}
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1110,12 +1123,20 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
-            <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={closeAccountModal}
-            >
-              Lưu
-            </button>
+            <div className="mt-4 flex justify-start space-x-2">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={closeLinkBank}
+              >
+                Lưu
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={closeLinkBank}
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1140,12 +1161,20 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 className="w-full px-4 py-2 border rounded-lg"
               />
             </div>
-            <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
-              onClick={closeAccountModal}
-            >
-              Lưu
-            </button>
+            <div className="mt-4 flex justify-start space-x-2">
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={closeSecuritySettings}
+              >
+                Lưu
+              </button>
+              <button
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                onClick={closeSecuritySettings}
+              >
+                Đóng
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1223,7 +1252,7 @@ const Page: React.FC = () => {
     setIsRegistering(false);
     setDefaultUsername(username);
     setDefaultPassword(password);
-    setIsLoggedIn(false); // Quay trở lại màn hình đăng nhập
+    setIsLoggedIn(false);
   };
 
   const handleForgotPassword = () => {
@@ -1242,7 +1271,7 @@ const Page: React.FC = () => {
   };
 
   const handleCancelRegister = () => {
-    setIsRegistering(false); // Quay trở lại màn hình đăng nhập
+    setIsRegistering(false);
   };
 
   if (isLoggedIn) {
