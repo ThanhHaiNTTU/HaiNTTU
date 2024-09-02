@@ -380,6 +380,7 @@ const ForgotPasswordPage: React.FC<{
 };
 
 const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
+  const [userName, setUserName] = useState<string>("HUỲNH THANH HẢI"); // Thêm trạng thái cho tên người dùng
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [transactionData, setTransactionData] = useState<Transaction>({
@@ -404,6 +405,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
   );
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [descriptionHistory, setDescriptionHistory] = useState<string[]>([]);
+  const [editedName, setEditedName] = useState<string>(userName); // Trạng thái để lưu tên được chỉnh sửa
 
   useEffect(() => {
     const existingData = localStorage.getItem("transactions");
@@ -417,8 +419,9 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
     }
   }, []);
 
-  const closeEditProfile = () => {
-    setShowEditProfile(false);
+  const handleSaveProfile = () => {
+    setUserName(editedName); // Cập nhật tên người dùng
+    setShowEditProfile(false); // Đóng form
   };
 
   const closeLinkBank = () => {
@@ -586,7 +589,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="bg-white shadow rounded-lg p-4 text-center">
             <h2 className="text-2xl font-bold text-red-600 mb-4">
-              Xin chào, HUỲNH THANH HẢI
+              Xin chào, {userName}
             </h2>
             <h2
               className="text-lg font-bold text-blue-800"
@@ -1065,6 +1068,8 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 type="text"
                 placeholder="Họ và tên"
                 className="w-full px-4 py-2 border rounded-lg"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
               />
               <input
                 type="email"
@@ -1085,13 +1090,13 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             <div className="mt-4 flex justify-start space-x-2">
               <button
                 className="bg-blue-500 text-white px-4 py-2 rounded"
-                onClick={closeEditProfile}
+                onClick={handleSaveProfile}
               >
                 Lưu
               </button>
               <button
                 className="bg-red-500 text-white px-4 py-2 rounded"
-                onClick={closeEditProfile}
+                onClick={handleSaveProfile}
               >
                 Đóng
               </button>
