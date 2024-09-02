@@ -781,7 +781,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 <FaSave />
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded ml-2"
+                className="bg-red-500 text-white px-4 py-2 rounded ml-2"
                 onClick={closeModal}
               >
                 <FaTimes />
@@ -1048,7 +1048,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
               </ul>
             </div>
             <button
-              className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
+              className="mt-4 bg-red-500 text-white px-4 py-2 rounded"
               onClick={closeHelpModal}
             >
               Đóng
