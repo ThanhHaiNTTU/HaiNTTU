@@ -1063,7 +1063,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
             <div className="mt-4 space-y-2">
               <input
                 type="text"
-                placeholder="Tên đầy đủ"
+                placeholder="Họ và tên"
                 className="w-full px-4 py-2 border rounded-lg"
               />
               <input
