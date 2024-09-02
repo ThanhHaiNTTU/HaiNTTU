@@ -976,7 +976,7 @@ const MainPage: React.FC<{ onLogout: () => void }> = ({ onLogout }) => {
                 Tất cả
               </button>
               <button
-                className="bg-gray-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded"
                 onClick={closeStatisticsModal}
               >
                 Đóng
